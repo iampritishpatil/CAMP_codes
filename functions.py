@@ -10,7 +10,7 @@ import scipy.stats
 
 Phi = lambda z: 0.5 + 0.5 * scipy.special.erf(z / np.sqrt(2)) #area of gaussian till z
 
-def create_martix(p=0.1,N=100):
+def create_matrix(p=0.1,N=100):
     a=np.zeros([N,N])
     for i in xrange(N):
         if np.random.rand()>Phi(-1):
