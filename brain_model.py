@@ -45,8 +45,8 @@ spikes=brian.SpikeMonitor(neurons)
 
 neurons.V = Vr + np.random.rand(N) * (Vt - Vr)*1.1
 
-tper=5
-numtimes=7
+tper=2
+numtimes=1
 tmax =tper*numtimes
 #print neurons.I
 for ti in range(numtimes):
@@ -60,19 +60,21 @@ for ti in range(numtimes):
 #neurons.I=0*np.ones(N)*brian.mV
 
 #brian.run(5*brian.second)
-plt.subplot(411)
-brian.raster_plot(spikes,marker='.',color='k')
+#plt.subplot(411)
+#brian.raster_plot(spikes,marker='.',color='k')
 #plt.show()
 
 a=spikes.getspiketimes()
 b=a.values()
-plt.subplot(412)
+plt.subplot(411)
 rate_mat=spike_to_rate(spiketimes=b,tmax=tmax,filter_size=200)
 for i,r in enumerate(rate_mat):
     plt.plot(r)
 #plt.show()
 
-plt.subplot(413)
+plt.title('Firing rates of different neurons')
+plt.ylabel('Frequency (Hz)')
+plt.subplot(412)
 w,v=np.linalg.eig(mat)
 vinv = np.linalg.inv(np.matrix(v))
 Xnew=np.dot(rate_mat.T,v)
@@ -80,9 +82,49 @@ Xnew=np.dot(rate_mat.T,v)
 
 for i,r in enumerate(Xnew.T[np.where(w!=w.max())]):
     plt.plot(r)
-plt.subplot(414)
+
+plt.title('Components resolved from weight matrix')
+plt.ylabel('Relative units')
+
+plt.subplot(413)
 for i,r in enumerate(Xnew.T[np.where(w==w.max())]):
+    if r.sum()<0:
+        plt.plot(-1*r,label='From weight matrix')
+    else:
+        plt.plot(r,label='From weight matrix')
+    
+    
+plt.ylabel('Relative units')
+X=np.dot(rate_mat,rate_mat.T)
+o,k=np.linalg.eig(X)
+
+
+XXnew = np.dot(rate_mat.T,k)
+for i,r in enumerate(XXnew.T[np.where(o==o.max())]):
+    if r.sum()<0:
+        plt.plot(-1*r,label='From Component analysis')
+    else:
+        plt.plot(r,label='From Component analysis')
+
+plt.title('Comprision of the components resolved')
+plt.ylabel('Relative units')
+
+
+plt.subplot(414)
+
+for i,r in enumerate(XXnew.T[np.where(o!=o.max())]):
     plt.plot(r)
+plt.title('Other components resolved from analysis')
+plt.ylabel('Relative units')
+
+plt.xlabel('Time (ms)')
+
+plt.tight_layout()
 
 plt.show()
+
+
+
+
+
 
