@@ -34,7 +34,7 @@ eqs+=OrnsteinUhlenbeck('J',mu=0*brian.mV,sigma=10*brian.mV,tau=10*brian.ms)
 
 neurons = brian.NeuronGroup(N, model=eqs, threshold=Vt, reset=Vr,refractory=2*brian.ms)
 
-neurons.I=np.ones(N)*30*brian.mV
+
 
 exc=brian.Connection(neurons, neurons, 'ge', weight=map_exc, threshold=Vt, reset=Vr,delay=1*brian.ms)
 
@@ -45,22 +45,44 @@ spikes=brian.SpikeMonitor(neurons)
 
 neurons.V = Vr + np.random.rand(N) * (Vt - Vr)*1.1
 
+tper=5
+numtimes=7
+tmax =tper*numtimes
 #print neurons.I
-
-brian.run(1*brian.second)
+for ti in range(numtimes):
+    neurons.I=np.random.rand(N)*40*brian.mV
+    brian.run(tper*0.5*brian.second)
+    neurons.I=np.random.rand(N)*15*brian.mV
+    brian.run(tper*0.5*brian.second)
+    print ti
+    
 #plt.subplot(211)
-neurons.I=0*np.ones(N)*brian.mV
+#neurons.I=0*np.ones(N)*brian.mV
 
-brian.run(5*brian.second)
-plt.subplot(211)
+#brian.run(5*brian.second)
+plt.subplot(411)
 brian.raster_plot(spikes,marker='.',color='k')
 #plt.show()
 
 a=spikes.getspiketimes()
 b=a.values()
-plt.subplot(212)
-rate_mat=spike_to_rate(spiketimes=b,tmax=6,filter_size=200)
+plt.subplot(412)
+rate_mat=spike_to_rate(spiketimes=b,tmax=tmax,filter_size=200)
 for i,r in enumerate(rate_mat):
     plt.plot(r)
-    #print i
+#plt.show()
+
+plt.subplot(413)
+w,v=np.linalg.eig(mat)
+vinv = np.linalg.inv(np.matrix(v))
+Xnew=np.dot(rate_mat.T,v)
+
+
+for i,r in enumerate(Xnew.T[np.where(w!=w.max())]):
+    plt.plot(r)
+plt.subplot(414)
+for i,r in enumerate(Xnew.T[np.where(w==w.max())]):
+    plt.plot(r)
+
 plt.show()
+
