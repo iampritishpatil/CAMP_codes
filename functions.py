@@ -3,7 +3,7 @@ import matplotlib.pylab as plt
 from scipy import integrate
 import scipy
 import scipy.stats
-
+import scipy.ndimage.filters
 
 
 
@@ -42,6 +42,15 @@ def plot_eigenvalues(matrix):
     plt.show()
 
 
-
+def spike_to_rate(spiketimes,tmax,filter_size):
+    arr=np.zeros([np.size(spiketimes),tmax*1000])
+    for i,data in enumerate(spiketimes):
+        #print i
+        temp_mat=np.zeros(tmax*1000)
+        temp_mat[(data*1000).astype(int)]=1000
+        scipy.ndimage.filters.gaussian_filter1d(temp_mat,filter_size,mode='constant',output=arr[i])
+        #plt.plot(arr[i])
+        #plt.show()
+    return arr
 
 

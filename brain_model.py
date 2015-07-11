@@ -34,7 +34,7 @@ eqs+=OrnsteinUhlenbeck('J',mu=0*brian.mV,sigma=10*brian.mV,tau=10*brian.ms)
 
 neurons = brian.NeuronGroup(N, model=eqs, threshold=Vt, reset=Vr,refractory=2*brian.ms)
 
-neurons.I=np.ones(N)*30*brian.mV
+neurons.I=np.ones(N)*40*brian.mV
 
 exc=brian.Connection(neurons, neurons, 'ge', weight=map_exc, threshold=Vt, reset=Vr,delay=1*brian.ms)
 
@@ -47,11 +47,11 @@ neurons.V = Vr + np.random.rand(N) * (Vt - Vr)*1.1
 
 #print neurons.I
 
-brian.run(0.11*brian.second)
+brian.run(1*brian.second)
 #plt.subplot(211)
 neurons.I=0*np.ones(N)*brian.mV
 
-brian.run(1*brian.second)
+brian.run(5*brian.second)
 
 brian.raster_plot(spikes,marker='.',color='k')
 plt.show()
@@ -59,3 +59,8 @@ plt.show()
 a=spikes.getspiketimes()
 b=a.values()
 
+rate_mat=spike_to_rate(spiketimes=b,tmax=6,filter_size=100)
+for i,r in enumerate(rate_mat):
+    plt.plot(r)
+    #print i
+plt.show()
