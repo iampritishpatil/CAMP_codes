@@ -10,13 +10,13 @@ import scipy.stats
 
 Phi = lambda z: 0.5 + 0.5 * scipy.special.erf(z / np.sqrt(2)) #area of gaussian till z
 
-def create_matrix(p=0.1,N=100):
+def create_matrix(p=0.1,N=100,mean=1):
     a=np.zeros([N,N])
     for i in xrange(N):
-        if np.random.rand()>Phi(-1):
-            a[i,:]=scipy.stats.truncnorm.rvs(-1, np.inf, size=N)+1
+        if np.random.rand()>Phi(-1*mean):
+            a[i,:]=scipy.stats.truncnorm.rvs(-1*mean, np.inf, size=N)+1*mean
         else:
-            a[i,:]=scipy.stats.truncnorm.rvs(-1*np.inf, -1, size=N)+1
+            a[i,:]=scipy.stats.truncnorm.rvs(-1*np.inf, -1*mean, size=N)+1*mean
     a=a*np.random.binomial(1,p,[N,N])/(p*N)
     return a
 
@@ -25,7 +25,7 @@ def plot_matrix(matrix):
     ax = fig.add_subplot(111)
     ax.set_title('colorMap')
     vmax=np.max(np.max(matrix),-1*np.min(matrix))
-    plt.imshow(matrix,cmap=plt.get_cmap('seismic'),vmin=-1*vmax,vmax=vmax)#interpolation='none',
+    plt.imshow(matrix,interpolation='none',cmap=plt.get_cmap('seismic'),vmin=-1*vmax,vmax=vmax)
     ax.set_aspect('equal')
     plt.colorbar(orientation='vertical')
     plt.show()
